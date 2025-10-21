@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\API\AuthController;  
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\CategoryController;
  
 
 // Route::get('/user', function (Request $request) {
@@ -23,4 +25,24 @@ Route::middleware(['auth:sanctum', 'role:Admin,RH'])->group(function () {
     Route::get('/v1/users/{user}', [UserController::class, 'show']);
     Route::put('/v1/users/{user}', [UserController::class, 'update']);
     Route::delete('/v1/users/{user}', [UserController::class, 'destroy']);
+});
+
+
+// Public routes for category listing
+Route::middleware(['auth:sanctum', 'role:Admin,Cashier,Counter'])->group(function () {
+    Route::post('/v1/categories', [CategoryController::class, 'store']);
+    Route::get('/v1/categories', [CategoryController::class, 'index']);
+    Route::get('/v1/categories/{id}', [CategoryController::class, 'show']);
+    Route::put('/v1/categories/{id}', [CategoryController::class, 'update']);
+    Route::delete('/v1/categories/{id}', [CategoryController::class, 'destroy']);
+});
+
+
+// Protected routes for product management
+Route::middleware(['auth:sanctum', 'role:Admin,Cashier,Counter'])->group(function () {
+    Route::post('/v1/products', [ProductController::class, 'store']);
+    Route::get('/v1/products', [ProductController::class, 'index']);
+    Route::get('/v1/products/{id}', [ProductController::class, 'show']);
+    Route::put('/v1/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/v1/products/{id}', [ProductController::class, 'destroy']);
 });
