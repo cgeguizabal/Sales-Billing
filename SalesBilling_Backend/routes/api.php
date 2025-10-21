@@ -9,6 +9,8 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\PurchaseController;
+use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\SaleController;
  
 
 // Route::get('/user', function (Request $request) {
@@ -63,4 +65,22 @@ Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->group(function () {
     Route::post('/v1/purchases', [PurchaseController::class, 'store']);
     Route::get('/v1/purchases', [PurchaseController::class, 'index']);
+});
+
+
+// Protected routes for customer management
+Route::middleware(['auth:sanctum', 'role:Admin,Cashier'])->group(function () {
+    Route::get('/v1/customers', [CustomerController::class, 'index']);
+    Route::post('/v1/customers', [CustomerController::class, 'store']);
+    Route::get('/v1/customers/{id}', [CustomerController::class, 'show']);
+    Route::put('/v1/customers/{id}', [CustomerController::class, 'update']);
+    Route::delete('/v1/customers/{id}', [CustomerController::class, 'destroy']);
+});
+
+
+// Sales routes
+Route::middleware(['auth:sanctum', 'role:Admin,Cashier'])->group(function () {
+    Route::post('/v1/sales', [SaleController::class, 'store']);   // Create a sale
+    Route::get('/v1/sales', [SaleController::class, 'index']);    // List all sales
+    Route::get('/v1/sales/{id}', [SaleController::class, 'show']); // Show single sale
 });
