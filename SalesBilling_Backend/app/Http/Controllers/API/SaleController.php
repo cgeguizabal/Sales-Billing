@@ -10,13 +10,14 @@ use App\Models\SaleDetail;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\InventoryTransaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
-    // removed __construct per your instruction
+    
 
     public function store(Request $request)
     {
@@ -130,4 +131,23 @@ class SaleController extends Controller
             return response()->json(['status' => false, 'message' => 'Sale not found', 'error' => $e->getMessage()], 404);
         }
     }
+
+    public function invoice($id)
+{
+    try {
+        $sale = Sale::with('details.product', 'customer')->findOrFail($id);
+
+        
+        $pdf = Pdf::loadView('invoice', compact('sale'));
+
+        
+        return $pdf->stream("invoice_{$sale->id}.pdf");
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to generate invoice',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }

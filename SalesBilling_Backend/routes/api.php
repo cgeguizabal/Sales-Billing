@@ -91,3 +91,8 @@ Route::middleware(['auth:sanctum', 'role:Admin,Cashier'])->group(function () {
 
 // Inventory reports route
 Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->get('/v1/inventoryTransactions', [InventoryController::class, 'index']);
+
+
+Route::middleware(['auth:sanctum', 'role:Admin,Cashier,Counter'])->get('/v1/sales/{id}/invoice', [SaleController::class, 'invoice']);
+
+// Route::get('/v1/sales/{id}/invoice', [SaleController::class, 'invoice']);
