@@ -44,9 +44,9 @@ CREATE TABLE jobs (
     queue VARCHAR(255) NOT NULL,
     payload LONGTEXT NOT NULL,
     attempts TINYINT UNSIGNED NOT NULL,
-    reserved_at TIMESTAMP NULL,
-available_at TIMESTAMP NOT NULL,
-created_at TIMESTAMP NOT NULL,
+    reserved_at INT UNSIGNED NULL,
+    available_at INT UNSIGNED NOT NULL,
+    created_at INT UNSIGNED NOT NULL,
     INDEX (queue)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
