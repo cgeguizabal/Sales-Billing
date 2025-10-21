@@ -30,3 +30,10 @@ SELECT * FROM categories;
 
 DROP TABLE IF EXISTS products;
 
+ALTER TABLE products
+DROP FOREIGN KEY fk_products_category,
+DROP FOREIGN KEY fk_products_user;
+
+ALTER TABLE products
+ADD FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
