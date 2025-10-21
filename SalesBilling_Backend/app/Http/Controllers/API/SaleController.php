@@ -9,10 +9,15 @@ use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\InventoryTransaction;
+
+
 use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
+    // removed __construct per your instruction
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -24,69 +29,80 @@ class SaleController extends Controller
 
         $userId = Auth::id();
         if (!$userId) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthenticated'
-            ], 401);
+            return response()->json(['status' => false, 'message' => 'Unauthenticated'], 401);
         }
 
         try {
-            return DB::transaction(function () use ($data, $userId) {
-                // Create sale
-                $sale = Sale::create([
-                    'customer_id' => $data['customer_id'],
-                    'user_id' => $userId,
-                    'IVA' => 0,
-                    'total_before_iva' => 0,
-                    'total_sale' => 0,
-                ]);
+            DB::beginTransaction();
 
-                $totalBeforeIVA = 0;
-                $IVA_PERCENT = 0.13;
+            $sale = Sale::create([
+                'customer_id' => $data['customer_id'],
+                'user_id' => $userId,
+                'IVA' => 0,
+                'total_before_iva' => 0,
+                'total_sale' => 0
+            ]);
 
-                foreach ($data['details'] as $detail) {
-                    $product = Product::find($detail['product_id']);
-                    if (!$product) {
-                        throw new \Exception("Product ID {$detail['product_id']} not found");
-                    }
+            $totalBeforeIVA = 0;
+            $IVA_PERCENT = 0.13;
 
-                    if ($product->stock < $detail['quantity']) {
-                        throw new \Exception("Not enough stock for product {$product->name}");
-                    }
+            foreach ($data['details'] as $detail) {
+                $product = Product::findOrFail($detail['product_id']);
+                $quantity = (int)$detail['quantity'];
 
-                    $unitPrice = (float)$product->price;
-                    $subtotal = $unitPrice * $detail['quantity'];
-                    $totalBeforeIVA += $subtotal;
-
-                    // Create sale detail
-                    SaleDetail::create([
-                        'sale_id' => $sale->id,
-                        'product_id' => $product->id,
-                        'quantity' => $detail['quantity'],
-                        'unit_price' => $unitPrice,
-                    ]);
-
-                    // Decrement stock
-                    $product->decrement('stock', $detail['quantity']);
+                if (!isset($product->price) || !isset($product->stock)) {
+                    throw new \Exception("Product {$product->id} missing price or stock");
                 }
 
-                $ivaAmount = round($totalBeforeIVA * $IVA_PERCENT, 2);
-                $totalSale = round($totalBeforeIVA + $ivaAmount, 2);
+                if ($product->stock < $detail['quantity']) {
+                    throw new \Exception("Not enough stock for product {$product->name}");
+                }
 
-                // Update totals
-                $sale->update([
-                    'IVA' => $ivaAmount,
-                    'total_before_iva' => $totalBeforeIVA,
-                    'total_sale' => $totalSale,
+                $unitPrice = (float)$product->price;
+                $subtotal = $unitPrice * $detail['quantity'];
+                $totalBeforeIVA += $subtotal;
+
+                $saleDetail = SaleDetail::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $product->id,
+                    'quantity' => $detail['quantity'],
+                    'unit_price' => $unitPrice
                 ]);
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Sale created successfully',
-                    'data' => $sale->load('details.product', 'customer'),
-                ], 201);
-            });
-        } catch (\Exception $e) {
+                // Decrease stock
+                $product->decrement('stock', $detail['quantity']);
+
+                // Insert inventory transaction (SALE)
+                DB::table('inventory_transactions')->insert([
+                        'product_id' => $product->id,
+                        'transaction_type' => 'sale', 
+                        'quantity' => $quantity,
+                        'transaction_date' => now(),
+                        'reference_id' => $sale->id,
+                    ]);
+            }
+
+            $ivaAmount = round($totalBeforeIVA * $IVA_PERCENT, 2);
+            $totalSale = round($totalBeforeIVA + $ivaAmount, 2);
+
+            $sale->update([
+                'IVA' => $ivaAmount,
+                'total_before_iva' => $totalBeforeIVA,
+                'total_sale' => $totalSale
+            ]);
+
+            DB::commit();
+
+            $sale->load('details.product', 'customer');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Sale created successfully',
+                'data' => $sale
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => 'Sale creation failed',
@@ -98,34 +114,20 @@ class SaleController extends Controller
     public function index()
     {
         try {
-            $sales = Sale::with('customer', 'details.product')->get();
-            return response()->json([
-                'status' => true,
-                'data' => $sales,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Failed to fetch sales',
-                'error' => $e->getMessage()
-            ], 500);
+            $sales = Sale::with('details.product', 'customer')->get();
+            return response()->json(['status' => true, 'data' => $sales]);
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Failed to fetch sales', 'error' => $e->getMessage()], 500);
         }
     }
 
     public function show($id)
     {
         try {
-            $sale = Sale::with('customer', 'details.product')->findOrFail($id);
-            return response()->json([
-                'status' => true,
-                'data' => $sale,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Sale not found',
-                'error' => $e->getMessage()
-            ], 404);
+            $sale = Sale::with('details.product', 'customer')->findOrFail($id);
+            return response()->json(['status' => true, 'data' => $sale]);
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Sale not found', 'error' => $e->getMessage()], 404);
         }
     }
 }

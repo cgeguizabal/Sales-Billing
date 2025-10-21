@@ -11,6 +11,8 @@ use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\PurchaseController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\SaleController;
+
+use App\Http\Controllers\API\InventoryController;
  
 
 // Route::get('/user', function (Request $request) {
@@ -84,3 +86,8 @@ Route::middleware(['auth:sanctum', 'role:Admin,Cashier'])->group(function () {
     Route::get('/v1/sales', [SaleController::class, 'index']);    // List all sales
     Route::get('/v1/sales/{id}', [SaleController::class, 'show']); // Show single sale
 });
+
+
+
+// Inventory reports route
+Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->get('/v1/inventoryTransactions', [InventoryController::class, 'index']);

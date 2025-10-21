@@ -9,6 +9,7 @@ use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Supplier;
 use App\Models\Product;
+use App\Models\InventoryTransaction;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
@@ -32,7 +33,6 @@ class PurchaseController extends Controller
 
         try {
             return DB::transaction(function () use ($data, $userId) {
-                // Create purchase
                 $purchase = Purchase::create([
                     'user_id' => $userId,
                     'supplier_id' => $data['supplier_id'],
@@ -42,28 +42,30 @@ class PurchaseController extends Controller
                 $total = 0;
 
                 foreach ($data['details'] as $detail) {
-                    $product = Product::find($detail['product_id']);
-                    if (!$product) {
-                        throw new \Exception("Product ID {$detail['product_id']} not found");
-                    }
+                    $product = Product::findOrFail($detail['product_id']);
+                    $unitCost = (float)$product->cost;
+                    $quantity = (int)$detail['quantity'];
 
-                    // Create purchase detail with unit cost
                     PurchaseDetail::create([
                         'purchase_id' => $purchase->id,
                         'product_id' => $product->id,
-                        'quantity' => $detail['quantity'],
-                        'unit_cost' => (float)$product->cost, // <-- NEW
+                        'quantity' => $quantity,
+                        'unit_cost' => $unitCost,
                     ]);
 
-                    // Calculate subtotal
-                    $subtotal = $detail['quantity'] * (float)$product->cost;
-                    $total += $subtotal;
+                    $total += $unitCost * $quantity;
+                    $product->increment('stock', $quantity);
 
-                    // Update stock
-                    $product->increment('stock', $detail['quantity']);
+                    
+                    DB::table('inventory_transactions')->insert([
+                        'product_id' => $product->id,
+                        'transaction_type' => 'purchase', 
+                        'quantity' => $quantity,
+                        'transaction_date' => now(),
+                        'reference_id' => $purchase->id,
+                    ]);
                 }
 
-                // Update total purchase
                 $purchase->update(['total' => $total]);
 
                 return response()->json([
@@ -76,7 +78,7 @@ class PurchaseController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Purchase creation failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -85,7 +87,6 @@ class PurchaseController extends Controller
     {
         try {
             $purchases = Purchase::with('supplier', 'details.product')->get();
-
             return response()->json([
                 'status' => true,
                 'data' => $purchases,
@@ -94,7 +95,7 @@ class PurchaseController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to fetch purchases',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
