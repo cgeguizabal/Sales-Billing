@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\SupplierController;
+use App\Http\Controllers\API\PurchaseController;
  
 
 // Route::get('/user', function (Request $request) {
@@ -50,10 +51,16 @@ Route::middleware(['auth:sanctum', 'role:Admin,Cashier,Counter'])->group(functio
 
 
 // Protected routes for supplier management
-Route::middleware(['auth:sanctum', 'role:Admin,Counter,RH'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->group(function () {
     Route::post('/v1/suppliers', [SupplierController::class, 'store']);
     Route::get('/v1/suppliers', [SupplierController::class, 'index']);
     Route::get('/v1/suppliers/{id}', [SupplierController::class, 'show']);
     Route::put('/v1/suppliers/{id}', [SupplierController::class, 'update']);
     Route::delete('/v1/suppliers/{id}', [SupplierController::class, 'destroy']);
+});
+
+// Protected routes for purchase management
+Route::middleware(['auth:sanctum', 'role:Admin,Counter'])->group(function () {
+    Route::post('/v1/purchases', [PurchaseController::class, 'store']);
+    Route::get('/v1/purchases', [PurchaseController::class, 'index']);
 });
