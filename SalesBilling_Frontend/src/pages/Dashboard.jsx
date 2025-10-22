@@ -6,6 +6,7 @@ import CategoryForm from "../components/CategoryForm";
 import ProductForm from "../components/ProductForm";
 import SalesInvoicing from "../components/SalesInvoicing";
 import PurchaseForm from "../components/PurchaseForm";
+import KardexReport from "../components/KardexReport";
 
 function Dashboard() {
   const [selectedMenu, setSelectedMenu] = useState(null);
@@ -19,6 +20,7 @@ function Dashboard() {
         {selectedMenu === "Products" && <ProductForm />}
         {selectedMenu === "Invoicing" && <SalesInvoicing />}
         {selectedMenu === "Purchases" && <PurchaseForm />}
+        {selectedMenu === "Reports" && <KardexReport />}
       </div>
     </div>
   );

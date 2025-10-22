@@ -1,0 +1,71 @@
+.container {
+  max-width: 60em;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.headerRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  span {
+    text-align: center;
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+
+  span {
+    text-align: center;
+  }
+
+  .product {
+    font-weight: 500;
+  }
+
+  .type {
+    text-transform: capitalize;
+    font-weight: 600;
+  }
+
+  .purchase {
+    color: #28a745;
+  }
+
+  .sale {
+    color: #dc3545;
+  }
+
+  .date {
+    color: #555;
+    font-size: 0.9rem;
+  }
+
+  .quantity {
+    font-weight: bold;
+    color: #333;
+  }
+}
