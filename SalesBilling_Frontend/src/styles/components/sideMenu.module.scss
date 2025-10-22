@@ -1,0 +1,43 @@
+.sideMenu {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  background: linear-gradient(to top, #007bff, #00bcd4);
+  padding: 1rem;
+  min-height: 100vh;
+}
+
+.menuItem {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-family: "Roboto", sans-serif;
+
+  &:hover {
+    background-color: white;
+    color: #00bcd4;
+  }
+}
+
+.active {
+  background-color: white;
+  color: #00bcd4;
+}
+
+.logoutButton {
+  margin-top: 3rem;
+  background: #d9534f;
+
+  &:hover {
+    background: #c5b5b5;
+    color: #d9534f;
+  }
+}
