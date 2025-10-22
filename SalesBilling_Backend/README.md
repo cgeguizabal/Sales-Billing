@@ -127,18 +127,6 @@ https://sales-billing-production.up.railway.app/api/
 
 ---
 
-## 🏭 Gestión de Proveedores
-
-| Método | Endpoint           | Descripción        | Rol Requerido  |
-| ------ | ------------------ | ------------------ | -------------- |
-| POST   | /v1/suppliers      | Crear proveedor    | Admin/Contador |
-| GET    | /v1/suppliers      | Listar proveedores | Admin/Contador |
-| GET    | /v1/suppliers/{id} | Ver proveedor      | Admin/Contador |
-| PUT    | /v1/suppliers/{id} | Actualizar         | Admin/Contador |
-| DELETE | /v1/suppliers/{id} | Eliminar           | Admin/Contador |
-
----
-
 ## 🛒 Gestión de Compras
 
 | Método | Endpoint      | Descripción      | Rol Requerido  |
