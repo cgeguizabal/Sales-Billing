@@ -1,16 +1,110 @@
-# React + Vite
+# 💼 Sistema de Ventas e Inventario (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un **Sistema de Gestión de Ventas e Inventario**, construido con **React + Vite**, que se conecta a un **backend en Laravel**.  
+Permite gestionar productos, proveedores, compras, ventas y visualizar el movimiento del inventario a través del **Reporte Kardex**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Características
 
-## React Compiler
+### 🧾 Productos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Crear, ver y gestionar productos.
+- Carga dinámica de la base de datos a través de la API.
 
-## Expanding the ESLint configuration
+### 🏢 Proveedores
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Visualizar todos los proveedores registrados.
+- Los datos se obtienen directamente desde la base de datos del backend.
+
+### 🛒 Compras
+
+- Registrar compras a proveedores.
+- Seleccionar múltiples productos y cantidades.
+- Actualiza automáticamente el inventario mediante la API.
+
+### 💵 Ventas
+
+- Registrar ventas con productos y clientes.
+- Descuenta las existencias automáticamente.
+
+### 📊 Reporte Kardex
+
+- Muestra los movimientos de cada producto (compras y ventas).
+- Control de inventario detallado por fecha, tipo de transacción y cantidad.
+- Resalta los tipos de transacción con colores diferentes.
+
+---
+
+## 🧠 Tecnologías Utilizadas
+
+| Categoría              | Tecnología   |
+| ---------------------- | ------------ |
+| **Frontend**           | React + Vite |
+| **Estilos**            | SCSS Modules |
+| **Gráficos**           | Recharts     |
+| **Cliente HTTP**       | Axios        |
+| **Backend**            | Laravel API  |
+| **Gestor de paquetes** | npm          |
+
+---
+
+## 🛠️ Requisitos para Probar la Aplicación
+
+- La aplicación está actualmente en línea y completamente funcional.
+- Usuarios de prueba:
+
+```json
+//Admin
+{
+    "email": "guillermo@example.com",
+    "password": "secret123"
+}
+
+//RH
+{
+    "email": "fernando@example.com",
+    "password": "secret12345"
+}
+
+//Cashier
+{
+    "email": "ivonne@example.com",
+    "password": "secret123456"
+}
+
+//Counter
+{
+    "email": "joshua@example.com",
+    "password": "secret1234567"
+}
+
+
+```
+
+Privilegios de Admin:
+
+- Administración
+- Facturación
+- Compras
+- Ventas
+- Inventarios
+- Bancos
+- Contabilidad
+- Recursos humanos (Administracion de usuarios)
+
+Privilegios de Cashier:
+
+- Facturación
+- Ventas
+
+Privilegios de Counter:
+
+- Inventarios
+- Bancos
+- Contabilidad
+- Compras
+
+Privilegios de RH:
+
+- Recursos humanos(Administracion de usuarios)
