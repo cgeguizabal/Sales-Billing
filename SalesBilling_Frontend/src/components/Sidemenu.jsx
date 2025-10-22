@@ -7,12 +7,12 @@ function SideMenu({ selected, onSelect }) {
 
   const menuItems = [
     "Users",
-    "Sales",
-    "Suppliers",
     "Categories",
     "Products",
+    "Sales",
     "Invoicing",
     "Purchases",
+    "Suppliers",
     "Reports",
     "Banks",
   ];
